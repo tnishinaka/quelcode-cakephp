@@ -88,7 +88,7 @@ class AuctionController extends AuctionBaseController
 	// 出品する処理
 	public function add()
 	{
-		$biditem_id = $this->Biditems->find('all', [
+		$biditem = $this->Biditems->find('all', [
 			'order' => ['id' => 'desc']
 		])->first();
 
@@ -99,7 +99,7 @@ class AuctionController extends AuctionBaseController
 			$file = $this->request->getData('biditem_img_path');
 			$file_extension = strtolower(mb_substr(mb_strrchr($file['name'], "."), 1));
 			if ($file_extension === 'png' || $file_extension === 'jpg' || $file_extension === 'jpeg') {
-				$fileName = strval($biditem_id->id + 1) . $file_extension;
+				$fileName = strval($biditem->id + 1) . '.' . $file_extension;
 				$filePath = WWW_ROOT . 'img/biditem_images/' . $fileName;
 				move_uploaded_file($file['tmp_name'], $filePath);
 				$data = array(
@@ -108,7 +108,7 @@ class AuctionController extends AuctionBaseController
 					'finished' => $this->request->getData('finished'),
 					'endtime' => $this->request->getData('endtime'),
 					'biditem_info' => $this->request->getData('biditem_info'),
-					'biditem_img_path' => strval($biditem_id->id + 1) . $file_extension,
+					'biditem_img_path' => strval($biditem->id + 1) . $file_extension,
 				);
 
 				// $biditemにフォームの送信内容を反映
