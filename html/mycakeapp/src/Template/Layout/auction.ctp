@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<?= $this->Html->charset() ?>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,11 +16,12 @@
 	<?= $this->fetch('css') ?>
 	<?= $this->fetch('script') ?>
 </head>
+
 <body>
 	<nav class="top-bar titlebar" data-topbar role="navigation">
 		<ul class="title-area large-3 medium-4 columns name">
 			<li>
-				<h1><?=$this->Html->link(__('Auction! [' . $authuser['username'] . ']'), ['action' => 'index']) ?></h1>
+				<h1><?= $this->Html->link(__('Auction! [' . $authuser['username'] . ']'), ['action' => 'index']) ?></h1>
 			</li>
 		</ul>
 		<div class="top-bar-section">
@@ -40,10 +42,14 @@
 				<li><?= $this->Html->link(__('あなたの出品情報'), ['action' => 'home2']) ?></li>
 				<li><?= $this->Html->link(__('商品を出品する'), ['action' => 'add']) ?></li>
 				<li><?= $this->Html->link(__('商品リストを見る'), ['action' => 'index']) ?></li>
+				<li><?= $this->Html->link(__('ログアウト'), ['action' => 'logout']) ?></li>
+				<li><?= $this->Html->link(__('発送・受領やり取り'), ['action' => 'list']) ?></li>
+				<li><?= $this->Html->link(__('ユーザー評価'),  ['controller' => 'Rating', 'action' => 'ratingindex',  $authuser['id']]);  ?></li>
 			</ul>
 		</nav>
 	</div>
 	<footer>
 	</footer>
 </body>
+
 </html>

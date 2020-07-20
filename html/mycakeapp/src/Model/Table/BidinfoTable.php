@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Table;
 
 use Cake\ORM\Query;
@@ -53,6 +54,9 @@ class BidinfoTable extends Table
         $this->hasMany('Bidmessages', [
             'foreignKey' => 'bidinfo_id',
         ]);
+        $this->hasOne('Biderinfo', [
+            'foreignKey' => 'bidinfo_id',
+        ]);
     }
 
     /**
@@ -73,6 +77,13 @@ class BidinfoTable extends Table
             ->notEmptyString('price');
 
         return $validator;
+    }
+
+    //落札者であるか確認
+    public function checkBidderId($id)
+    {
+        $n = $this->find()->where(['user_id' => $id])->count();
+        return $n > 0 ? true : false;
     }
 
     /**

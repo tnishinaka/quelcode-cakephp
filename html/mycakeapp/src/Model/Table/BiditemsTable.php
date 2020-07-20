@@ -53,6 +53,9 @@ class BiditemsTable extends Table
         $this->hasMany('Bidrequests', [
             'foreignKey' => 'biditem_id',
         ]);
+        $this->hasOne('Biderinfo', [
+            'foreignKey' => 'biditem_id',
+        ]);
     }
 
     /**
@@ -96,6 +99,14 @@ class BiditemsTable extends Table
 
         return $validator;
     }
+
+    //落札者がいる商品の出品者であるかどうか判定する
+    // public function checkBiditemId($id)
+    // {
+    //     $n = $this->find()->contain(['Bidinfo'])->where(['Biditems.user_id' => $id]);
+    //     // var_dump($n);
+    //     return $n > 0 ? true : false;
+    // }
 
     /**
      * Returns a rules checker object that will be used for validating
