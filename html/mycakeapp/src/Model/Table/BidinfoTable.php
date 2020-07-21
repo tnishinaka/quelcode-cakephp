@@ -79,13 +79,6 @@ class BidinfoTable extends Table
         return $validator;
     }
 
-    //落札者であるか確認
-    public function checkBidderId($id)
-    {
-        $n = $this->find()->where(['user_id' => $id])->count();
-        return $n > 0 ? true : false;
-    }
-
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.

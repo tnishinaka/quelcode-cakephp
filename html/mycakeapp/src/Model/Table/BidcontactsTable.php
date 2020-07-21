@@ -68,7 +68,7 @@ class BidcontactsTable extends Table
             ->scalar('message')
             ->maxLength('message', 1000)
             ->requirePresence('message', 'create')
-            ->notEmptyString('message');
+            ->notEmptyString('message', '必須入力項目です。');
 
         return $validator;
     }

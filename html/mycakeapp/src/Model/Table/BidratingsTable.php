@@ -45,11 +45,11 @@ class BidratingsTable extends Table
 
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id',
-            'joinType' => 'LEFT',
+            'joinType' => 'INNER',
         ]);
         $this->belongsTo('Biderinfo', [
             'foreignKey' => 'biderinfo_id',
-            'joinType' => 'LEFT',
+            'joinType' => 'INNER',
         ]);
     }
 
@@ -68,9 +68,8 @@ class BidratingsTable extends Table
         $validator
             ->integer('rating')
             ->requirePresence('rating', 'create')
-            ->notEmpty('rating')
+            ->notEmptyString('rating')
             ->inList('rating', [1, 2, 3, 4, 5]);
-
 
         $validator
             ->scalar('comment')

@@ -68,6 +68,7 @@ class AuctionController extends AuctionBaseController
 			$biderinfo = $this->Biderinfo->newEntity();
 			// Bidinfoのbiditem_idに$idを設定
 			$bidinfo->biditem_id = $id;
+			//biderinfoテーブルにbiditemsのidをupdate
 			$biderinfo->biditem_id = $id;
 
 			// 最高金額のBidrequestを検索
@@ -83,6 +84,7 @@ class AuctionController extends AuctionBaseController
 				$bidinfo->user = $bidrequest->user;
 				$bidinfo->price = $bidrequest->price;
 				$this->Bidinfo->save($bidinfo);
+				//biderinfoテーブルにbidinfoのidをupdate
 				$biderinfo->bidinfo_id = $bidinfo->id;
 				$this->Biderinfo->save($biderinfo);
 			}
@@ -234,6 +236,13 @@ class AuctionController extends AuctionBaseController
 		$this->set(compact('biditems'));
 	}
 
+	//list.ctpでの落札者か確認
+	public function checkBidderId($id)
+	{
+		$n = $this->Bidinfo->find()->where(['user_id' => $id])->count();
+		return $n > 0 ? true : false;
+	}
+
 	//list.ctpでの出品者か確認
 	public function checkBiditemId($id)
 	{
@@ -256,15 +265,13 @@ class AuctionController extends AuctionBaseController
 		return $n > 0 ? true : false;
 	}
 
-
-
 	public function list()
 	{
 		$result1 = 0;
 		$result2 = 0;
 
 		//落札した商品情報を持つか判定
-		if ($this->Bidinfo->checkBidderId($this->Auth->user('id'))) {
+		if ($this->checkBidderId($this->Auth->user('id'))) {
 			$biderinfo_bider = $this->Bidinfo->find('all')
 				->contain(['Biditems', 'Biderinfo'])->where(['Bidinfo.user_id' => $this->Auth->user('id')])
 				->order(['Biderinfo.id' => 'ASC'])
@@ -290,11 +297,8 @@ class AuctionController extends AuctionBaseController
 
 	public function info($id = null)
 	{
-		// var_dump($this->Biderinfo->get($id));
-		// $a = $this->Biderinfo->get($id)->id;
-		// echo $this->Biderinfo->get($id)->id;
 		$biderinfo_id = $this->Biderinfo->get($id)->id;
-		//落札者:0　出品者:1　判定
+		//落札者:0 出品者:1 判定
 		$flag = null;
 		if ($this->infoCheckBidinfoId($this->Auth->user('id'), $biderinfo_id)) {
 			$flag = 0;
@@ -304,12 +308,6 @@ class AuctionController extends AuctionBaseController
 			//落札者でも出品者でもない場合indexに戻す
 			return $this->redirect(['action' => 'index']);
 		}
-
-		// try { // $biderinfo_idからBiderinfoを取得する
-		// 	$biderinfo = $this->Biderinfo->get($id);
-		// } catch (Exception $e) {
-		// 	$biderinfo = null;
-		// }
 
 		//コメント、名前、日付取得
 		$bidmsg = $this->Bidcontacts->find('all', [
@@ -340,17 +338,9 @@ class AuctionController extends AuctionBaseController
 	public function infoadd()
 	{
 		$biderinfo_id = $this->request->getData('id');
-		// Biditemインスタンスを用意
 
 		// POST送信時の処理
 		if ($this->request->is('post')) {
-			// $data = array(
-			// 	'bider_name' => $this->request->getData('bider_name'),
-			// 	'bider_address' => $this->request->getData('bider_address'),
-			// 	'bider_tel' => $this->request->getData('bider_tel'),
-			// 	'biditem_info' => $this->request->getData('biditem_info'),
-			// 	'created' => date("Y-m-d H:i:s")
-			// );
 			$biderinfo = $this->Biderinfo->get($this->request->getData('id'));
 			// $biditemにフォームの送信内容を反映
 			$biderinfo = $this->Biderinfo->patchEntity($biderinfo, $this->request->getData());
@@ -358,7 +348,7 @@ class AuctionController extends AuctionBaseController
 			if ($this->Biderinfo->save($biderinfo)) {
 				// 成功時のメッセージ
 				$this->Flash->success(__('保存しました。'));
-				// トップページ（index）に移動
+				// infoに移動
 				return $this->redirect(['action' => 'info', $biderinfo_id]);
 			}
 			// 失敗時のメッセージ
@@ -366,6 +356,20 @@ class AuctionController extends AuctionBaseController
 		}
 	}
 
+	public function rewrite($id = null)
+	{
+		$biderinfo = $this->Biderinfo->get($id);
+		$biderinfo->is_completed = 0;
+
+		if ($this->Biderinfo->save($biderinfo)) {
+			// 成功時のメッセージ
+			$this->Flash->success(__('更新しました'));
+			// infoに移動
+			return $this->redirect(['action' => 'info', $biderinfo->id]);
+		}
+		// 失敗時のメッセージ
+		$this->Flash->error(__('更新に失敗しました。'));
+	}
 	public function send($id = null)
 	{
 		$biderinfo = $this->Biderinfo->get($id);
@@ -378,7 +382,7 @@ class AuctionController extends AuctionBaseController
 		if ($this->Biderinfo->save($biderinfo)) {
 			// 成功時のメッセージ
 			$this->Flash->success(__('更新しました'));
-			// トップページに移動
+			// infoに移動
 			return $this->redirect(['action' => 'info', $biderinfo->id]);
 		}
 		// 失敗時のメッセージ
@@ -396,7 +400,7 @@ class AuctionController extends AuctionBaseController
 		if ($this->Biderinfo->save($biderinfo)) {
 			// 成功時のメッセージ
 			$this->Flash->success(__('更新しました'));
-			// トップページに移動
+			// infoに移動
 			return $this->redirect(['action' => 'info', $biderinfo->id]);
 		}
 		// 失敗時のメッセージ

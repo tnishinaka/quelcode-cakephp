@@ -35,6 +35,21 @@
     echo ' 電話番号 : ';
     echo empty($biderinfo->bider_tel) ? '未確定' : $biderinfo->bider_tel . '<br>';
     ?>
+    <?=
+        $this->Form->postLink(
+            '書き直す',
+            ['action' => 'rewrite', $biderinfo->id]
+        );
+    ?>
+    <?php echo '<br>'; ?>
+<?php elseif (intval($biderinfo->is_completed) === 1 && $flag === 0) : ?>
+    <?=
+        $this->Form->postLink(
+            '書き直す',
+            ['action' => 'rewrite', $biderinfo->id]
+        );
+    ?>
+    <?php echo '<br>'; ?>
 <?php endif; ?>
 
 <?php if ($flag === 1 && intval($biderinfo->is_completed) === 1) : ?>
@@ -72,6 +87,7 @@
             ]
         ); ?>
     <?php
+    echo $this->Form->hidden('stopper', ['value' => 'stop']);
     echo $this->Form->hidden('biderinfo_id', ['value' => $biderinfo->id]);
     echo $this->Form->hidden('user_id', ['value' => $authuser['id']]);
     echo $this->Form->hidden('partner_user_id', ['value' => $partner_user_id->user_id]);
@@ -96,7 +112,6 @@
 <?= $this->Form->textarea('message', ['rows' => 2]); ?>
 <?= $this->Form->button('Submit') ?>
 <?= $this->Form->end() ?>
-<?php echo empty($bidmsg) ?>
 <table cellpadding="0" cellspacing="0">
     <thead>
         <tr>
@@ -106,13 +121,20 @@
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($bidmsg as $msg) : ?>
+        <?php if (!$bidmsg->isEmpty()) : ?>
+            <?php foreach ($bidmsg as $msg) : ?>
+                <tr>
+                    <td><?= h($msg->user->username) ?></td>
+                    <td><?= h($msg->message) ?></td>
+                    <td><?= h($msg->created) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        <?php else : ?>
             <tr>
-                <td><?= h($msg->user->username) ?></td>
-                <td><?= h($msg->message) ?></td>
-                <td><?= h($msg->created) ?></td>
+                <td colspan="3">※メッセージがありません。</td>
             </tr>
-        <?php endforeach; ?>
+        <?php endif; ?>
+
 
     </tbody>
 </table>

@@ -49,10 +49,6 @@ class BiderinfoTable extends Table
             'foreignKey' => 'bidinfo_id',
             'joinType' => 'INNER',
         ]);
-        // $this->belongsTo('Bidrequests', [
-        //     'foreignKey' => 'bidrequest_id',
-        //     'joinType' => 'LEFT',
-        // ]);
         $this->belongsTo('Biditems', [
             'foreignKey' => 'biditem_id',
             'joinType' => 'INNER',
@@ -79,33 +75,39 @@ class BiderinfoTable extends Table
 
         $validator
             ->scalar('bider_name')
-            ->maxLength('bider_name', 20)
-            ->notEmpty('bider_name', '必須入力です。');
+            ->maxLength('bider_name', 20, '20文字以内で入力してください')
+            ->notEmptyString('bider_name', '必須入力です。');
 
         $validator
             ->scalar('bider_address')
-            ->maxLength('bider_address', 30)
-            ->notEmpty('bider_address', '必須入力です。');
+            ->maxLength('bider_address', 30, '30文字以内で入力してください')
+            ->notEmptyString('bider_address', '必須入力です。');
 
         $validator
             ->scalar('bider_tel')
-            ->maxLength('bider_tel', 20)
-            ->notEmpty('bider_tel', '必須入力です。');
+            ->maxLength('bider_tel', 20, '20文字以内で入力してください')
+            ->notEmptyString('bider_tel', '必須入力です。');
 
         $validator
-            ->boolean('is_completed')
-            ->notEmptyString('is_completed');
+            ->numeric('is_completed')
+            ->inList('is_completed', [0, 1]);
 
         $validator
-            ->boolean('is_sended')
-            ->allowEmptyString('is_sended');
+            ->numeric('is_sended')
+            ->inList('is_sended', [0, 1]);
 
         $validator
-            ->boolean('is_received')
-            ->notEmptyString('is_received');
+            ->numeric('is_received')
+            ->inList('is_received', [0, 1]);
 
         return $validator;
     }
+
+    // 電話番号チェック
+    // public function check_tel($value, $con)
+    // {
+    //     return (bool) preg_match('/^[0-9]{2,5}-?[0-9]{2,5}-?[0-9]{2,5}$/', $value);
+    // }
 
     /**
      * Returns a rules checker object that will be used for validating

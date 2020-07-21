@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Datasource\ConnectionManager;
+use App\Controller\TableRegistry;
 
 use Cake\Event\Event; // added.   git branch -c FILE_NAME(FROM) FILE_NAME(TO)
 use Exception; // added.
@@ -30,31 +31,26 @@ class RatingController extends AppController
     {
         $data = $this->request->getData();
         $biderinfo_id = $data['biderinfo_id'];
-        // echo $data['biderinfo_id'];
-        // $biderinfo = $this->Biderinfo->find('all')
-        //     ->where(['Biderinfo.id' => $data['biderinfo_id']])
-        //     ->first();
 
         //すでに記入済みかどうか確認
         $rating_num = $this->Bidratings->find('all')
             ->where(['Bidratings.biderinfo_id' => $data['biderinfo_id']])->andWhere(['Bidratings.user_id' => $data['user_id']])
             ->count();
-        // if ($biderinfo->is_received !== 1 || is_null($user_id) || is_null($partner_user_id)) {
-        //     return $this->redirect(['controller' => 'Auction', 'action' => 'index']);
-        // }
 
         //user評価insert
         $bidratings = $this->Bidratings->newEntity();
         if ($this->request->is('post')) {
-
-            $bidratings = $this->Bidratings->patchEntity($bidratings, $this->request->getData());
-            if ($this->Bidratings->save($bidratings)) {
-                $this->Flash->success(__('保存しました。'));
-            } else {
-                $this->Flash->error(__('保存に失敗しました。もう一度入力下さい。'));
+            if (empty($data['stopper'])) {
+                $bidratings = $this->Bidratings->patchEntity($bidratings, $this->request->getData());
+                if ($this->Bidratings->save($bidratings)) {
+                    $this->Flash->success(__('保存しました。'));
+                    return $this->redirect(['controller' => 'Auction', 'action' => 'info', $biderinfo_id]);
+                } else {
+                    $this->Flash->error(__('保存に失敗しました。もう一度入力下さい。'));
+                    return $this->redirect(['controller' => 'Auction', 'action' => 'info', $biderinfo_id]);
+                }
             }
         }
-
         $this->set(compact('biderinfo_id',  'bidratings', 'rating_num', 'data'));
     }
 
@@ -76,6 +72,7 @@ class RatingController extends AppController
         $avg_data = $avg['result'];
         $bidratings = $this->paginate('Bidratings', [
             'conditions' => ['Bidratings.user_id IN' => [$user_id]],
+            'join' => ['Users'],
             'order' => ['Bidratings.rating' => 'DESC'],
             'limit' => 10
         ])->toArray();
