@@ -43,9 +43,11 @@
         );
     ?>
     <?php echo '<br>'; ?>
+<?php else : ?>
+    <h5><?php echo '未記入'; ?></h5>
 <?php endif; ?>
 
-<?php if ($flag === 1 && intval($biderinfo->is_completed) === 1) : ?>
+<?php if ($flag === 1 && intval($biderinfo->is_completed) === 1 && intval($biderinfo->is_sended) === 0) : ?>
     <?=
         $this->Form->postLink(
             '発送',
@@ -53,7 +55,8 @@
         );
     ?>
     <?php echo '<br>'; ?>
-<?php elseif ($flag === 0 && intval($biderinfo->is_sended) === 1) : ?>
+<?php endif; ?>
+<?php if ($flag === 0 && intval($biderinfo->is_sended) === 1 && intval($biderinfo->is_received) === 0) : ?>
     <?=
         $this->Form->postLink(
             '受取',

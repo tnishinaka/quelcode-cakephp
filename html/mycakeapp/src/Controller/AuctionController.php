@@ -373,12 +373,8 @@ class AuctionController extends AuctionBaseController
 	public function send($id = null)
 	{
 		$biderinfo = $this->Biderinfo->get($id);
-		if (intval($biderinfo->is_sended) === 0) {
-			$biderinfo->is_sended = 1;
-		} elseif (intval($biderinfo->is_sended) === 1) {
-			$biderinfo->is_sended = 0;
-		}
-
+		//発送済みに変更
+		$biderinfo->is_sended = 1;
 		if ($this->Biderinfo->save($biderinfo)) {
 			// 成功時のメッセージ
 			$this->Flash->success(__('更新しました'));
@@ -392,11 +388,9 @@ class AuctionController extends AuctionBaseController
 	public function receive($id = null)
 	{
 		$biderinfo = $this->Biderinfo->get($id);
-		if (intval($biderinfo->is_received) === 0) {
-			$biderinfo->is_received = 1;
-		} elseif (intval($biderinfo->is_received) === 1) {
-			$biderinfo->is_received = 0;
-		}
+		//受取済みに変更
+		$biderinfo->is_received = 1;;
+
 		if ($this->Biderinfo->save($biderinfo)) {
 			// 成功時のメッセージ
 			$this->Flash->success(__('更新しました'));

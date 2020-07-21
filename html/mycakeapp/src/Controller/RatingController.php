@@ -57,7 +57,6 @@ class RatingController extends AppController
     public function ratingindex($user_id = null)
     {
         $users = $this->paginate('Users', [
-            'conditions' => ['Users.id IS NOT' => $user_id],
             'order' => ['user_id' => 'asc'],
             'limit' => 10
         ])->toArray();
@@ -71,7 +70,6 @@ class RatingController extends AppController
             ->fetch('assoc');
         $avg_data = $avg['result'];
         $bidratings = $this->paginate('Bidratings', [
-            'conditions' => ['Bidratings.user_id IN' => [$user_id]],
             'order' => ['Bidratings.rating' => 'DESC'],
             'limit' => 10
         ])->toArray();
