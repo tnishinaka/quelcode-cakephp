@@ -15,9 +15,9 @@
         <legend>評価・コメント</legend>
 
         <?php
-        echo $this->Form->hidden('user_id', ['value' => $data['user_id']]);
+        echo $this->Form->hidden('user_id', ['value' => $data['partner_user_id']]);
         echo $this->Form->hidden('biderinfo_id', ['value' => $data['biderinfo_id']]);
-        echo $this->Form->hidden('user_judger_id', ['value' => $data['partner_user_id']]);
+        echo $this->Form->hidden('user_judger_id', ['value' => $data['user_id']]);
         echo $this->Form->select('rating', [1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5]);
         echo $this->Form->textarea('comment', ['rows' => 2]);
         ?>

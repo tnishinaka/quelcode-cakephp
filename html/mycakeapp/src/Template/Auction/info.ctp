@@ -35,13 +35,6 @@
     echo ' 電話番号 : ';
     echo empty($biderinfo->bider_tel) ? '未確定' : $biderinfo->bider_tel . '<br>';
     ?>
-    <?=
-        $this->Form->postLink(
-            '書き直す',
-            ['action' => 'rewrite', $biderinfo->id]
-        );
-    ?>
-    <?php echo '<br>'; ?>
 <?php elseif (intval($biderinfo->is_completed) === 1 && $flag === 0) : ?>
     <?=
         $this->Form->postLink(

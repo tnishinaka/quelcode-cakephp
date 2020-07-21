@@ -34,7 +34,7 @@ class RatingController extends AppController
 
         //すでに記入済みかどうか確認
         $rating_num = $this->Bidratings->find('all')
-            ->where(['Bidratings.biderinfo_id' => $data['biderinfo_id']])->andWhere(['Bidratings.user_id' => $data['user_id']])
+            ->where(['Bidratings.biderinfo_id' => $data['biderinfo_id']])->andWhere(['Bidratings.user_judger_id' => $data['user_id']])
             ->count();
 
         //user評価insert
