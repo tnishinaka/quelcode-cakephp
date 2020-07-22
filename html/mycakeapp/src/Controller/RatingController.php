@@ -70,6 +70,7 @@ class RatingController extends AppController
             ->fetch('assoc');
         $avg_data = $avg['result'];
         $bidratings = $this->paginate('Bidratings', [
+            'conditions' => ['user_id' => $user_id],
             'order' => ['Bidratings.rating' => 'DESC'],
             'limit' => 10
         ])->toArray();
