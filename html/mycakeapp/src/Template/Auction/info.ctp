@@ -1,7 +1,7 @@
 <h4>発送先</h4>
 
 
-<?php if ($flag === 0 && intval($biderinfo->is_completed) === 0) : ?>
+<?php if ($isSeller === false && intval($biderinfo->is_completed) === 0) : ?>
     <?= $this->Form->create(
         $biderinfo,
         [
@@ -35,7 +35,7 @@
     echo ' 電話番号 : ';
     echo empty($biderinfo->bider_tel) ? '未確定' : $biderinfo->bider_tel . '<br>';
     ?>
-<?php elseif (intval($biderinfo->is_completed) === 1 && $flag === 0) : ?>
+<?php elseif (intval($biderinfo->is_completed) === 1 && $isSeller === false) : ?>
     <?=
         $this->Form->postLink(
             '書き直す',
@@ -47,7 +47,7 @@
     <h5><?php echo '未記入'; ?></h5>
 <?php endif; ?>
 
-<?php if ($flag === 1 && intval($biderinfo->is_completed) === 1 && intval($biderinfo->is_sended) === 0) : ?>
+<?php if ($isSeller === true && intval($biderinfo->is_completed) === 1 && intval($biderinfo->is_sended) === 0) : ?>
     <?=
         $this->Form->postLink(
             '発送',
@@ -56,7 +56,7 @@
     ?>
     <?php echo '<br>'; ?>
 <?php endif; ?>
-<?php if ($flag === 0 && intval($biderinfo->is_sended) === 1 && intval($biderinfo->is_received) === 0) : ?>
+<?php if ($isSeller === false && intval($biderinfo->is_sended) === 1 && intval($biderinfo->is_received) === 0) : ?>
     <?=
         $this->Form->postLink(
             '受取',
@@ -70,7 +70,7 @@
     <?php echo '発送しました' . '<br>'; ?>
 <?php endif; ?>
 <?php if (intval($biderinfo->is_received) === 1) : ?>
-    <?php echo '受取ました' . '<br><br>'; ?>
+    <?php echo '受け取りました' . '<br><br>'; ?>
     <?=
         $this->Form->create(
             $biderinfo,

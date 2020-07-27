@@ -240,14 +240,14 @@ class AuctionController extends AuctionBaseController
 	public function checkBidderId($id)
 	{
 		$n = $this->Bidinfo->find()->where(['user_id' => $id])->count();
-		return $n > 0 ? true : false;
+		return ($n > 0);
 	}
 
 	//list.ctpでの出品者か確認
 	public function checkBiditemId($id)
 	{
 		$n = $this->Bidinfo->find()->contain(['Biditems'])->where(['Biditems.user_id' => $id])->count();
-		return $n > 0 ? true : false;
+		return ($n > 0);
 	}
 
 	//info.ctpでの落札者か確認
@@ -255,14 +255,14 @@ class AuctionController extends AuctionBaseController
 	{
 		$n = $this->Biderinfo->find()->contain(['Bidinfo'])->where(['Bidinfo.user_id' => $user_id])
 			->andWhere(['Biderinfo.id' => $biderinfo_id])->count();
-		return $n > 0 ? true : false;
+		return ($n > 0);
 	}
 	//info.ctpでの出品者か確認
 	public function infoCheckBiditemId($user_id, $biderinfo_id)
 	{
 		$n = $this->Biditems->find()->contain(['Biderinfo', 'Bidinfo'])->where(['Biditems.user_id' => $user_id])
 			->andWhere(['Biderinfo.id' => $biderinfo_id])->count();
-		return $n > 0 ? true : false;
+		return ($n > 0);
 	}
 
 	public function list()
@@ -298,12 +298,13 @@ class AuctionController extends AuctionBaseController
 	public function info($id = null)
 	{
 		$biderinfo_id = $this->Biderinfo->get($id)->id;
-		//落札者:0 出品者:1 判定
-		$flag = null;
+
+		//落札者:false 出品者:true 判定
+		$isSeller = null;
 		if ($this->infoCheckBidinfoId($this->Auth->user('id'), $biderinfo_id)) {
-			$flag = 0;
+			$isSeller = false;
 		} elseif ($this->infoCheckBiditemId($this->Auth->user('id'), $biderinfo_id)) {
-			$flag = 1;
+			$isSeller = true;
 		} else {
 			//落札者でも出品者でもない場合indexに戻す
 			return $this->redirect(['action' => 'index']);
@@ -322,17 +323,17 @@ class AuctionController extends AuctionBaseController
 		])->first();
 
 		//落札者 出品者で相手側のuser_idを取得
-		if ($flag === 0) {
+		if ($isSeller === false) {
 			$partner_user_id = $this->Biditems->find('all')
 				->contain(['Biderinfo'])->where(['Biderinfo.id' => $biderinfo_id])
 				->first();
-		} elseif ($flag === 1) {
+		} elseif ($isSeller === true) {
 			$partner_user_id = $this->Bidinfo->find('all')
 				->contain(['Biderinfo'])->where(['Biderinfo.id' => $biderinfo_id])
 				->first();
 		}
 
-		$this->set(compact('flag', 'biderinfo', 'bidmsg', 'partner_user_id'));
+		$this->set(compact('isSeller', 'biderinfo', 'bidmsg', 'partner_user_id'));
 	}
 
 	public function infoadd()

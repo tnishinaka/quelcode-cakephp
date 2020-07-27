@@ -33,4 +33,3 @@
 	</ul>
 </div>
 <h6><?= $this->Html->link(__('出品情報に移動 >>'), ['action' => 'home2']) ?></h6>
-
