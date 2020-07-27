@@ -6,6 +6,77 @@ class Initial extends AbstractMigration
     public function up()
     {
 
+        $this->table('bidcontacts')
+            ->addColumn('biderinfo_id', 'integer', [
+                'default' => null,
+                'limit' => null,
+                'null' => false,
+            ])
+            ->addColumn('user_id', 'integer', [
+                'default' => null,
+                'limit' => null,
+                'null' => false,
+            ])
+            ->addColumn('message', 'string', [
+                'default' => null,
+                'limit' => 1000,
+                'null' => false,
+            ])
+            ->addColumn('created', 'timestamp', [
+                'default' => null,
+                'limit' => null,
+                'null' => false,
+            ])
+            ->create();
+
+        $this->table('biderinfo')
+            ->addColumn('bidinfo_id', 'integer', [
+                'default' => null,
+                'limit' => null,
+                'null' => false,
+            ])
+            ->addColumn('biditem_id', 'integer', [
+                'default' => null,
+                'limit' => null,
+                'null' => false,
+            ])
+            ->addColumn('bider_name', 'string', [
+                'default' => null,
+                'limit' => 20,
+                'null' => true,
+            ])
+            ->addColumn('bider_address', 'string', [
+                'default' => null,
+                'limit' => 30,
+                'null' => true,
+            ])
+            ->addColumn('bider_tel', 'string', [
+                'default' => null,
+                'limit' => 20,
+                'null' => true,
+            ])
+            ->addColumn('is_completed', 'integer', [
+                'default' => '0',
+                'limit' => null,
+                'null' => false,
+            ])
+            ->addColumn('is_sended', 'integer', [
+                'default' => '0',
+                'limit' => null,
+                'null' => false,
+            ])
+            ->addColumn('is_received', 'integer', [
+                'default' => '0',
+                'limit' => null,
+                'null' => false,
+            ])
+            ->addColumn('created', 'datetime', [
+                'default' => null,
+                'limit' => null,
+                'null' => true,
+            ])
+            ->create();
+
         $this->table('bidinfo')
             ->addColumn('biditem_id', 'integer', [
                 'default' => null,
@@ -90,6 +161,39 @@ class Initial extends AbstractMigration
             ])
             ->create();
 
+        $this->table('bidratings')
+            ->addColumn('user_id', 'integer', [
+                'default' => null,
+                'limit' => null,
+                'null' => false,
+            ])
+            ->addColumn('biderinfo_id', 'integer', [
+                'default' => null,
+                'limit' => null,
+                'null' => false,
+            ])
+            ->addColumn('user_judger_id', 'integer', [
+                'default' => null,
+                'limit' => null,
+                'null' => false,
+            ])
+            ->addColumn('rating', 'integer', [
+                'default' => null,
+                'limit' => null,
+                'null' => false,
+            ])
+            ->addColumn('comment', 'string', [
+                'default' => null,
+                'limit' => 1000,
+                'null' => false,
+            ])
+            ->addColumn('created', 'timestamp', [
+                'default' => null,
+                'limit' => null,
+                'null' => false,
+            ])
+            ->create();
+
         $this->table('bidrequests')
             ->addColumn('biditem_id', 'integer', [
                 'default' => null,
@@ -134,9 +238,12 @@ class Initial extends AbstractMigration
 
     public function down()
     {
+        $this->table('bidcontacts')->drop()->save();
+        $this->table('biderinfo')->drop()->save();
         $this->table('bidinfo')->drop()->save();
         $this->table('biditems')->drop()->save();
         $this->table('bidmessages')->drop()->save();
+        $this->table('bidratings')->drop()->save();
         $this->table('bidrequests')->drop()->save();
         $this->table('users')->drop()->save();
     }
