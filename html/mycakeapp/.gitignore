@@ -41,4 +41,5 @@ nbproject/*
 .sass-cache/
 # fail関係
 .DS_Store
-biditem_images/*
+/webroot/img/biditem_images/*
+!/webroot/img/biditem_images/.gitkeep

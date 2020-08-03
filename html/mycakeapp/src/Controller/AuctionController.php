@@ -23,10 +23,18 @@ class AuctionController extends AuctionBaseController
 		$this->loadModel('Bidrequests');
 		$this->loadModel('Bidinfo');
 		$this->loadModel('Bidmessages');
+		$this->loadModel('Biderinfo');
+		$this->loadModel('Bidcontacts');
 		// ログインしているユーザー情報をauthuserに設定
 		$this->set('authuser', $this->Auth->user());
 		// レイアウトをauctionに変更
 		$this->viewBuilder()->setLayout('auction');
+	}
+
+	//ログアウト追加
+	public function logout()
+	{
+		return $this->redirect($this->Auth->logout());
 	}
 
 	// トップページ
@@ -56,8 +64,13 @@ class AuctionController extends AuctionBaseController
 			$this->Biditems->save($biditem);
 			// Bidinfoを作成する
 			$bidinfo = $this->Bidinfo->newEntity();
+
+			$biderinfo = $this->Biderinfo->newEntity();
 			// Bidinfoのbiditem_idに$idを設定
 			$bidinfo->biditem_id = $id;
+			//biderinfoテーブルにbiditemsのidをupdate
+			$biderinfo->biditem_id = $id;
+
 			// 最高金額のBidrequestを検索
 			$bidrequest = $this->Bidrequests->find('all', [
 				'conditions' => ['biditem_id' => $id],
@@ -71,6 +84,9 @@ class AuctionController extends AuctionBaseController
 				$bidinfo->user = $bidrequest->user;
 				$bidinfo->price = $bidrequest->price;
 				$this->Bidinfo->save($bidinfo);
+				//biderinfoテーブルにbidinfoのidをupdate
+				$biderinfo->bidinfo_id = $bidinfo->id;
+				$this->Biderinfo->save($biderinfo);
 			}
 			// Biditemのbidinfoに$bidinfoを設定
 			$biditem->bidinfo = $bidinfo;
@@ -218,5 +234,188 @@ class AuctionController extends AuctionBaseController
 			'limit' => 10
 		])->toArray();
 		$this->set(compact('biditems'));
+	}
+
+	//list.ctpでの落札者か確認
+	public function checkBidderId($id)
+	{
+		$n = $this->Bidinfo->find()->where(['user_id' => $id])->count();
+		return ($n > 0);
+	}
+
+	//list.ctpでの出品者か確認
+	public function checkBiditemId($id)
+	{
+		$n = $this->Bidinfo->find()->contain(['Biditems'])->where(['Biditems.user_id' => $id])->count();
+		return ($n > 0);
+	}
+
+	//info.ctpでの落札者か確認
+	public function infoCheckBidinfoId($user_id, $biderinfo_id)
+	{
+		$n = $this->Biderinfo->find()->contain(['Bidinfo'])->where(['Bidinfo.user_id' => $user_id])
+			->andWhere(['Biderinfo.id' => $biderinfo_id])->count();
+		return ($n > 0);
+	}
+	//info.ctpでの出品者か確認
+	public function infoCheckBiditemId($user_id, $biderinfo_id)
+	{
+		$n = $this->Biditems->find()->contain(['Biderinfo', 'Bidinfo'])->where(['Biditems.user_id' => $user_id])
+			->andWhere(['Biderinfo.id' => $biderinfo_id])->count();
+		return ($n > 0);
+	}
+
+	public function list()
+	{
+		$result1 = 0;
+		$result2 = 0;
+
+		//落札した商品情報を持つか判定
+		if ($this->checkBidderId($this->Auth->user('id'))) {
+			$biderinfo_bider = $this->Bidinfo->find('all')
+				->contain(['Biditems', 'Biderinfo'])->where(['Bidinfo.user_id' => $this->Auth->user('id')])
+				->order(['Biderinfo.id' => 'ASC'])
+				->all();
+			$this->set(compact('biderinfo_bider'));
+		} else {
+			$result1 = "落札情報は存在しません";
+		}
+		$this->set(compact('result1'));
+
+		//入札した情報を持つか判定
+		if ($this->checkBiditemId($this->Auth->user('id'))) {
+			$bideritems = $this->Bidinfo->find('all')
+				->contain(['Biditems', 'Biderinfo'])->where(['Biditems.user_id' => $this->Auth->user('id')])
+				->order(['Biderinfo.id' => 'ASC'])
+				->all();
+			$this->set(compact('bideritems'));
+		} else {
+			$result2 = "出品情報は存在しません";
+		}
+		$this->set(compact('result2'));
+	}
+
+	public function info($id = null)
+	{
+		$biderinfo_id = $this->Biderinfo->get($id)->id;
+
+		//落札者:false 出品者:true 判定
+		$isSeller = null;
+		if ($this->infoCheckBidinfoId($this->Auth->user('id'), $biderinfo_id)) {
+			$isSeller = false;
+		} elseif ($this->infoCheckBiditemId($this->Auth->user('id'), $biderinfo_id)) {
+			$isSeller = true;
+		} else {
+			//落札者でも出品者でもない場合indexに戻す
+			return $this->redirect(['action' => 'index']);
+		}
+
+		//コメント、名前、日付取得
+		$bidmsg = $this->Bidcontacts->find('all', [
+			'conditions' => ['biderinfo_id' => $biderinfo_id],
+			'contain' => ['Users'],
+			'order' => ['created' => 'desc']
+		]);
+
+		//記入フラグ,id,発送受領受取管理
+		$biderinfo = $this->Biderinfo->find('all', [
+			'conditions' => ['id' => $biderinfo_id]
+		])->first();
+
+		//落札者 出品者で相手側のuser_idを取得
+		if ($isSeller === false) {
+			$partner_user_id = $this->Biditems->find('all')
+				->contain(['Biderinfo'])->where(['Biderinfo.id' => $biderinfo_id])
+				->first();
+		} elseif ($isSeller === true) {
+			$partner_user_id = $this->Bidinfo->find('all')
+				->contain(['Biderinfo'])->where(['Biderinfo.id' => $biderinfo_id])
+				->first();
+		}
+
+		$this->set(compact('isSeller', 'biderinfo', 'bidmsg', 'partner_user_id'));
+	}
+
+	public function infoadd()
+	{
+		$biderinfo_id = $this->request->getData('id');
+
+		// POST送信時の処理
+		if ($this->request->is('post')) {
+			$biderinfo = $this->Biderinfo->get($this->request->getData('id'));
+			// $biditemにフォームの送信内容を反映
+			$biderinfo = $this->Biderinfo->patchEntity($biderinfo, $this->request->getData());
+			// $biditemを保存する
+			if ($this->Biderinfo->save($biderinfo)) {
+				// 成功時のメッセージ
+				$this->Flash->success(__('保存しました。'));
+				// infoに移動
+				return $this->redirect(['action' => 'info', $biderinfo_id]);
+			}
+			// 失敗時のメッセージ
+			$this->Flash->error(__('保存に失敗しました。もう一度入力下さい。'));
+		}
+	}
+
+	public function rewrite($id = null)
+	{
+		$biderinfo = $this->Biderinfo->get($id);
+		$biderinfo->is_completed = 0;
+
+		if ($this->Biderinfo->save($biderinfo)) {
+			// 成功時のメッセージ
+			$this->Flash->success(__('更新しました'));
+			// infoに移動
+			return $this->redirect(['action' => 'info', $biderinfo->id]);
+		}
+		// 失敗時のメッセージ
+		$this->Flash->error(__('更新に失敗しました。'));
+	}
+	public function send($id = null)
+	{
+		$biderinfo = $this->Biderinfo->get($id);
+		//発送済みに変更
+		$biderinfo->is_sended = 1;
+		if ($this->Biderinfo->save($biderinfo)) {
+			// 成功時のメッセージ
+			$this->Flash->success(__('更新しました'));
+			// infoに移動
+			return $this->redirect(['action' => 'info', $biderinfo->id]);
+		}
+		// 失敗時のメッセージ
+		$this->Flash->error(__('更新に失敗しました。'));
+	}
+
+	public function receive($id = null)
+	{
+		$biderinfo = $this->Biderinfo->get($id);
+		//受取済みに変更
+		$biderinfo->is_received = 1;;
+
+		if ($this->Biderinfo->save($biderinfo)) {
+			// 成功時のメッセージ
+			$this->Flash->success(__('更新しました'));
+			// infoに移動
+			return $this->redirect(['action' => 'info', $biderinfo->id]);
+		}
+		// 失敗時のメッセージ
+		$this->Flash->error(__('更新に失敗しました。'));
+	}
+
+	public function comment()
+	{
+		$biderinfo_id = $this->request->getData('biderinfo_id');
+		$bidmsg = $this->Bidcontacts->newEntity();
+		// POST送信時の処理
+		if ($this->request->is('post')) {
+			$bidmsg = $this->Bidcontacts->patchEntity($bidmsg, $this->request->getData());
+			// Bidmessageを保存
+			if ($this->Bidcontacts->save($bidmsg)) {
+				$this->Flash->success(__('保存しました。'));
+			} else {
+				$this->Flash->error(__('保存に失敗しました。もう一度入力下さい。'));
+			}
+		}
+		return $this->redirect(['action' => 'info', $biderinfo_id]);
 	}
 }

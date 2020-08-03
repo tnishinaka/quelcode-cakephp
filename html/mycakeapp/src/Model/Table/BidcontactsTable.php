@@ -8,24 +8,23 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * Bidinfo Model
+ * Bidcontacts Model
  *
- * @property \App\Model\Table\BiditemsTable&\Cake\ORM\Association\BelongsTo $Biditems
+ * @property \App\Model\Table\BiderinfosTable&\Cake\ORM\Association\BelongsTo $Biderinfos
  * @property \App\Model\Table\UsersTable&\Cake\ORM\Association\BelongsTo $Users
- * @property \App\Model\Table\BidmessagesTable&\Cake\ORM\Association\HasMany $Bidmessages
  *
- * @method \App\Model\Entity\Bidinfo get($primaryKey, $options = [])
- * @method \App\Model\Entity\Bidinfo newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\Bidinfo[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\Bidinfo|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Bidinfo saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Bidinfo patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\Bidinfo[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\Bidinfo findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\Bidcontact get($primaryKey, $options = [])
+ * @method \App\Model\Entity\Bidcontact newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\Bidcontact[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\Bidcontact|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\Bidcontact saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\Bidcontact patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\Bidcontact[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\Bidcontact findOrCreate($search, callable $callback = null, $options = [])
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class BidinfoTable extends Table
+class BidcontactsTable extends Table
 {
     /**
      * Initialize method
@@ -37,25 +36,19 @@ class BidinfoTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('bidinfo');
+        $this->setTable('bidcontacts');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
 
-        $this->belongsTo('Biditems', [
-            'foreignKey' => 'biditem_id',
+        $this->belongsTo('Biderinfo', [
+            'foreignKey' => 'biderinfo_id',
             'joinType' => 'INNER',
         ]);
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id',
             'joinType' => 'INNER',
-        ]);
-        $this->hasMany('Bidmessages', [
-            'foreignKey' => 'bidinfo_id',
-        ]);
-        $this->hasOne('Biderinfo', [
-            'foreignKey' => 'bidinfo_id',
         ]);
     }
 
@@ -72,9 +65,10 @@ class BidinfoTable extends Table
             ->allowEmptyString('id', null, 'create');
 
         $validator
-            ->integer('price')
-            ->requirePresence('price', 'create')
-            ->notEmptyString('price');
+            ->scalar('message')
+            ->maxLength('message', 1000)
+            ->requirePresence('message', 'create')
+            ->notEmptyString('message', '必須入力項目です。');
 
         return $validator;
     }
@@ -88,7 +82,7 @@ class BidinfoTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['biditem_id'], 'Biditems'));
+        $rules->add($rules->existsIn(['biderinfo_id'], 'Biderinfo'));
         $rules->add($rules->existsIn(['user_id'], 'Users'));
 
         return $rules;
