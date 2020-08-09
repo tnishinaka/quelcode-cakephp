@@ -39,3 +39,7 @@ nbproject/*
 .vscode
 # Sass preprocessor
 .sass-cache/
+# fail関係
+.DS_Store
+/webroot/img/biditem_images/*
+!/webroot/img/biditem_images/.gitkeep
