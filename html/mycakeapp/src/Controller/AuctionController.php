@@ -418,4 +418,6 @@ class AuctionController extends AuctionBaseController
 		}
 		return $this->redirect(['action' => 'info', $biderinfo_id]);
 	}
+
+
 }

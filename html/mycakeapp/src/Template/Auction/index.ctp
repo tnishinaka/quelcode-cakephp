@@ -1,9 +1,11 @@
+<script src="https://kit.fontawesome.com/1d9ab4b0fc.js" crossorigin="anonymous"></script>
 <h2>ミニオークション!</h2>
 <h3>※出品されている商品</h3>
 <table cellpadding="0" cellspacing="0">
 <thead>
 	<tr>
 		<th class="main" scope="col"><?= $this->Paginator->sort('name') ?></th>
+		<th scope="col"><?= $this->Paginator->sort('eye') ?></th>
 		<th scope="col"><?= $this->Paginator->sort('finished') ?></th>
 		<th scope="col"><?= $this->Paginator->sort('endtime') ?></th>
 		<th scope="col" class="actions"><?= __('Actions') ?></th>
@@ -13,6 +15,7 @@
 	<?php foreach ($auction as $biditem): ?>
 	<tr>
 		<td><?= h($biditem->name) ?></td>
+		<td><i class="far fa-eye"></i></td>
 		<td><?= h($biditem->finished ? 'Finished':'') ?></td>
 		<td><?= h($biditem->endtime) ?></td>
 		<td class="actions">
