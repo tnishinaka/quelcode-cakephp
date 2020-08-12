@@ -13,6 +13,10 @@
 		<td><?= $this->Number->format($biditem->id) ?></td>
 	</tr>
 	<tr>
+		<th scope="row">最低落札価格</th>
+		<td><?= $this->Number->format($biditem->lowest_price) ?></td>
+	</tr>
+	<tr>
 		<th scope="row">商品詳細</th>
 		<td><?= h($biditem->biditem_info) ?></td>
 	</tr>
