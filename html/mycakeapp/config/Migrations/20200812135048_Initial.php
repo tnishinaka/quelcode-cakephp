@@ -9,12 +9,12 @@ class Initial extends AbstractMigration
         $this->table('bidcontacts')
             ->addColumn('biderinfo_id', 'integer', [
                 'default' => null,
-                'limit' => null,
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('user_id', 'integer', [
                 'default' => null,
-                'limit' => null,
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('message', 'string', [
@@ -23,7 +23,7 @@ class Initial extends AbstractMigration
                 'null' => false,
             ])
             ->addColumn('created', 'timestamp', [
-                'default' => null,
+                'default' => 'CURRENT_TIMESTAMP',
                 'limit' => null,
                 'null' => false,
             ])
@@ -32,12 +32,12 @@ class Initial extends AbstractMigration
         $this->table('biderinfo')
             ->addColumn('bidinfo_id', 'integer', [
                 'default' => null,
-                'limit' => null,
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('biditem_id', 'integer', [
                 'default' => null,
-                'limit' => null,
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('bider_name', 'string', [
@@ -57,17 +57,17 @@ class Initial extends AbstractMigration
             ])
             ->addColumn('is_completed', 'integer', [
                 'default' => '0',
-                'limit' => null,
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('is_sended', 'integer', [
                 'default' => '0',
-                'limit' => null,
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('is_received', 'integer', [
                 'default' => '0',
-                'limit' => null,
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('created', 'datetime', [
@@ -80,17 +80,17 @@ class Initial extends AbstractMigration
         $this->table('bidinfo')
             ->addColumn('biditem_id', 'integer', [
                 'default' => null,
-                'limit' => null,
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('user_id', 'integer', [
                 'default' => null,
-                'limit' => null,
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('price', 'integer', [
                 'default' => null,
-                'limit' => null,
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('created', 'datetime', [
@@ -103,7 +103,12 @@ class Initial extends AbstractMigration
         $this->table('biditems')
             ->addColumn('user_id', 'integer', [
                 'default' => null,
-                'limit' => null,
+                'limit' => 11,
+                'null' => false,
+            ])
+            ->addColumn('lowest_price', 'integer', [
+                'default' => '0',
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('name', 'string', [
@@ -141,12 +146,12 @@ class Initial extends AbstractMigration
         $this->table('bidmessages')
             ->addColumn('bidinfo_id', 'integer', [
                 'default' => null,
-                'limit' => null,
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('user_id', 'integer', [
                 'default' => null,
-                'limit' => null,
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('message', 'text', [
@@ -164,22 +169,22 @@ class Initial extends AbstractMigration
         $this->table('bidratings')
             ->addColumn('user_id', 'integer', [
                 'default' => null,
-                'limit' => null,
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('biderinfo_id', 'integer', [
                 'default' => null,
-                'limit' => null,
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('user_judger_id', 'integer', [
                 'default' => null,
-                'limit' => null,
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('rating', 'integer', [
                 'default' => null,
-                'limit' => null,
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('comment', 'string', [
@@ -188,7 +193,7 @@ class Initial extends AbstractMigration
                 'null' => false,
             ])
             ->addColumn('created', 'timestamp', [
-                'default' => null,
+                'default' => 'CURRENT_TIMESTAMP',
                 'limit' => null,
                 'null' => false,
             ])
@@ -197,17 +202,17 @@ class Initial extends AbstractMigration
         $this->table('bidrequests')
             ->addColumn('biditem_id', 'integer', [
                 'default' => null,
-                'limit' => null,
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('user_id', 'integer', [
                 'default' => null,
-                'limit' => null,
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('price', 'integer', [
                 'default' => null,
-                'limit' => null,
+                'limit' => 11,
                 'null' => false,
             ])
             ->addColumn('created', 'datetime', [
