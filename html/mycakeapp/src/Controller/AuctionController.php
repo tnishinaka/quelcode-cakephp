@@ -127,6 +127,7 @@ class AuctionController extends AuctionBaseController
 				$data = array(
 					'user_id' => $this->request->getData('user_id'),
 					'name' => $this->request->getData('name'),
+					'lowest_price' => $this->request->getData('lowest_price'),
 					'finished' => $this->request->getData('finished'),
 					'endtime' => $this->request->getData('endtime'),
 					'biditem_info' => $this->request->getData('biditem_info'),
@@ -156,6 +157,9 @@ class AuctionController extends AuctionBaseController
 	// 入札の処理
 	public function bid($biditem_id = null)
 	{
+		// $biditem_idの$biditemを取得する
+		$biditem = $this->Biditems->get($biditem_id);
+		
 		// 入札用のBidrequestインスタンスを用意
 		$bidrequest = $this->Bidrequests->newEntity();
 		// $bidrequestにbiditem_idとuser_idを設定
@@ -163,6 +167,10 @@ class AuctionController extends AuctionBaseController
 		$bidrequest->user_id = $this->Auth->user('id');
 		// POST送信時の処理
 		if ($this->request->is('post')) {
+			if(intval($this->request->getData('price')) <= intval($biditem->lowest_price) -1) {
+				$this->Flash->error(__('最低価格以上の金額を設定してください。'));
+				return $this->redirect(['action' => 'bid', $biditem_id]);
+			}
 			// $bidrequestに送信フォームの内容を反映する
 			$bidrequest = $this->Bidrequests->patchEntity($bidrequest, $this->request->getData());
 			// Bidrequestを保存
@@ -175,8 +183,6 @@ class AuctionController extends AuctionBaseController
 			// 失敗時のメッセージ
 			$this->Flash->error(__('入札に失敗しました。もう一度入力下さい。'));
 		}
-		// $biditem_idの$biditemを取得する
-		$biditem = $this->Biditems->get($biditem_id);
 		$this->set(compact('bidrequest', 'biditem'));
 	}
 
@@ -418,4 +424,6 @@ class AuctionController extends AuctionBaseController
 		}
 		return $this->redirect(['action' => 'info', $biderinfo_id]);
 	}
+
+
 }
